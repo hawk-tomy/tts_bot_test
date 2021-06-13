@@ -9,8 +9,6 @@ from discord.ext import commands
 
 from bot_util import dispander, Embed, help_command, split_line
 from bot_util.config import config, ConfigBase
-#from bot_util.sio_client import SioClient
-#if you need socket.io client, please enabled.
 
 from cog import extension
 
@@ -49,14 +47,12 @@ class Bot(commands.Bot):
             message_id = ctx.message.id
             author_id = ctx.message.author.id
             logger.info(
-                f'{guild_id}/{channel_id}/{message_id}:{author_id}'
+                f'{guild_id}/{channel_id}/{message_id}:{author_id}, {author_id == self.owner_id}'
             )
-            return True
+            return author_id == self.owner_id
 
         self.check_once(log)
         self.__default_embed: Embed= Embed(**asdict(config.embed_setting))
-#        self.sio: SioClient= SioClient()
-#        self.sio_task = self.loop.create_task(self.sio.run())
         for ext in extension:
             self.load_extension(ext)
 
