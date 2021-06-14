@@ -13,7 +13,7 @@ from .jtalk import JTalk
 
 class TTS:
     def __init__(
-            self, 
+            self,
             loop: AbstractEventLoop,
             guild_setting: dict,
             dictionary: dict,
@@ -24,6 +24,22 @@ class TTS:
         self.lock = Lock()
         self.jtalk = JTalk()
         self.exec = ThreadPoolExecutor()
+
+    def update_guild_setting(self, **kwargs):
+        self.guild_setting.update(kwargs)
+
+    def add_dictionary(self, key: str, value: str):
+        self.dictionary[key] = value
+
+    def update_dictionary(self, **kwargs):
+        self.dictionary.update(kwargs)
+
+    def del_dictionary(self, key):
+        if key in self.dictionary:
+            del self.dictionary[key]
+
+    def clear_dictionary(self):
+        self.dictionary.clear()
 
     def get_source(self, text: str) -> BytesIO:
         pcm = self.jtalk.generate_pcm(text)

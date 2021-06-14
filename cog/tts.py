@@ -7,6 +7,9 @@ from logging import getLogger
 from discord.ext import commands
 
 
+from lib.tts import TTS
+
+
 logger = getLogger(__name__)
 
 
