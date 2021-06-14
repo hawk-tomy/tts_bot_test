@@ -1,4 +1,4 @@
-from asyncio import AbstractEventLoop
+from asyncio import AbstractEventLoop, Lock
 from audioop import tostereo
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
@@ -12,8 +12,16 @@ from .jtalk import JTalk
 
 
 class TTS:
-    def __init__(self, loop: AbstractEventLoop):
+    def __init__(
+            self, 
+            loop: AbstractEventLoop,
+            guild_setting: dict,
+            dictionary: dict,
+    ):
         self.loop = loop
+        self.guild_setting = guild_setting
+        self.dictionary = dictionary
+        self.lock = Lock()
         self.jtalk = JTalk()
         self.exec = ThreadPoolExecutor()
 
@@ -42,6 +50,7 @@ class TTS:
             speed: float= 1.0,
             tone: float= 0
     ):
-        self.set_voice_setting(voice, speed, tone)
-        pcm = await self.loop.run_in_executor(self.exec, self.get_source, text)
-        return PCMAudio(pcm)
+        async with self.lock:
+            self.set_voice_setting(voice, speed, tone)
+            pcm = await self.loop.run_in_executor(self.exec, self.get_source, text)
+            return PCMAudio(pcm)
